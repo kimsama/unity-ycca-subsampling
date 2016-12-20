@@ -48,7 +48,8 @@ public class YCgACoPostprocessor : AssetPostprocessor
         if (YCgACoUserData.Parse(assetImporter.userData) != null)
         {
             var importer = assetImporter as TextureImporter;
-            importer.textureType = TextureImporterType.GUI;
+            //importer.textureType = TextureImporterType.GUI;
+            importer.textureType = TextureImporterType.Advanced;
             importer.textureFormat = TextureImporterFormat.ARGB32;
         }
     }
@@ -65,6 +66,11 @@ public class YCgACoPostprocessor : AssetPostprocessor
         src.LoadImage(File.ReadAllBytes(srcPath));
 
         // Encode
-        YCgACoEncoder.Encode(src, dst, userData.UseGpuEncoder, userData.Format, importer.compressionQuality);
+        var bytes = YCgACoEncoder.Encode(src, dst, userData.UseGpuEncoder, userData.Format, importer.compressionQuality);
+
+        string path = Application.dataPath;
+        path = Path.GetDirectoryName(path);
+        path += "/" + assetPath;
+        File.WriteAllBytes(path, bytes);
     }
 }

@@ -30,7 +30,7 @@ public static class YCgACoEncoder
         }
     }
 
-    public static void Encode(Texture2D src, Texture2D dst, bool gpu = false,
+    public static byte[] Encode(Texture2D src, Texture2D dst, bool gpu = false,
                               YCgACoFormat format = YCgACoFormat.CgACoY_DontChange,
                               int quality = 100)
     {
@@ -59,7 +59,8 @@ public static class YCgACoEncoder
             RGBAToCgACoY(pixels, pixels);
             dst.SetPixels(pixels);
         }
-        Compress(dst, format, quality);
+        var bytes = Compress(dst, format, quality);
+        return bytes;
     }
 
     static void Resize(Texture src, Texture2D dst, YCgACoFormat format)
@@ -115,7 +116,7 @@ public static class YCgACoEncoder
         }
     }
 
-    static void Compress(Texture2D dst, YCgACoFormat format, int quality)
+    static byte[] Compress(Texture2D dst, YCgACoFormat format, int quality)
     {
         var texFormat = dst.format;
         switch (format)
@@ -143,8 +144,13 @@ public static class YCgACoEncoder
                 texFormat = TextureFormat.RGB565;
                 break;
             case YCgACoFormat.CgACoY_DontChange:
-                return;
+                return dst.EncodeToPNG();
         }
+        
+        
         EditorUtility.CompressTexture(dst, texFormat, quality);
+
+        return dst.EncodeToPNG();
+        
     }
 }
